@@ -62,7 +62,7 @@ function generateSumTypeGraph(ct, d){
             plugins: {
                 title: {
                     display: true,
-                    text: 'Number of contracts by year'
+                    text: 'Number of contracts by year (in France)'
                 }
             },
             scales: {
@@ -84,11 +84,70 @@ function generateSumTypeGraph(ct, d){
 }
 
 function generateByTrimesterGraph(ct, d){
-    let finalD = [];
-    let labels = [];
-    //generate bar for each trimester
-    //
+    let finalD =  {};
+    let labels = ["Trimester 1", "Trimester 2", "Trimester 3", "Trimester 4"];
+    //setup new data in following format
+    /*
+    "TRIMESTER:{
+        "YEAR": {
+            "contract": SUMCOUNT
+        },
+        ...
+    }
+    ...
+     */
+    console.log(d);
 
+    //generate data grouped by trimester
+    let datasets = [];
+    let avgData = {};
+    for(var year in d){
+        let yearDataset = {};
+        yearDataset.label = year;
+        yearDataset.data = [];
+        yearDataset.borderRadius = 500;
+        for(var trimester in d[year]){
+            let cdd = d[year][trimester]["CDD de plus d'un mois"];
+            let cdi = d[year][trimester]["CDI"];
+            yearDataset.data.push(cdd + cdi);
+        }
+        datasets.push(yearDataset);
+    }
+
+    createChart(ct, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: datasets
+        },
+        options: {
+            maintainAspectRatio: false,
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                title: {
+                    display: true,
+                    text: 'Number of contracts by trimester'
+                }
+            },
+            scales: {
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Number of contracts'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Trimester(grouped by year)'
+                    }
+                }
+            }
+        }
+    })
 
 }
 
